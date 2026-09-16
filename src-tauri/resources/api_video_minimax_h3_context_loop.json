@@ -1,0 +1,534 @@
+{
+  "1": {
+    "inputs": {
+      "unet_name": "MiniMax-H3/minimax_h3_fl2va_pruned_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    },
+    "class_type": "UNETLoader",
+    "_meta": {
+      "title": "Load Diffusion Model — H3 MODEL — REQUIRED"
+    }
+  },
+  "2": {
+    "inputs": {
+      "clip_name": "MiniMax-H3/qwen3vl_32b_minimax_h3_int8_convrot.safetensors",
+      "type": "minimax",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "Load CLIP — H3 TEXT ENCODER"
+    }
+  },
+  "3": {
+    "inputs": {
+      "vae_name": "MiniMaw-H3/minimax_h3_video_vae_fp16.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE — H3 Video VAE"
+    }
+  },
+  "4": {
+    "inputs": {
+      "vae_name": "MiniMaw-H3/minimax_h3_audio_vae_fp32.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE — H3 Audio VAE"
+    }
+  },
+  "5": {
+    "inputs": {
+      "shift_video": 12,
+      "shift_audio": 3,
+      "model": [
+        "1941",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3SigmaShift",
+    "_meta": {
+      "title": "ModelSamplingMiniMaxH3"
+    }
+  },
+  "110": {
+    "inputs": {
+      "prompt": [
+        "1702",
+        4
+      ],
+      "width": [
+        "1702",
+        8
+      ],
+      "height": [
+        "1702",
+        9
+      ],
+      "length": [
+        "1702",
+        6
+      ],
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "first_frame": [
+        "1946",
+        0
+      ],
+      "last_frame": [
+        "1946",
+        3
+      ]
+    },
+    "class_type": "MiniMaxH3ImageToVideo",
+    "_meta": {
+      "title": "MiniMax H3 Image to Video — CORE FL2VA — FIRST A ONCE + INDEXED LAST TARGET"
+    }
+  },
+  "120": {
+    "inputs": {
+      "noise_seed": [
+        "1702",
+        5
+      ]
+    },
+    "class_type": "RandomNoise",
+    "_meta": {
+      "title": "RandomNoise — Per-shot noise seed"
+    }
+  },
+  "121": {
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "conditioning": [
+        "1703",
+        0
+      ]
+    },
+    "class_type": "BasicGuider",
+    "_meta": {
+      "title": "Basic Guider — Loop guider"
+    }
+  },
+  "122": {
+    "inputs": {
+      "sampler_name": "res_multistep"
+    },
+    "class_type": "KSamplerSelect",
+    "_meta": {
+      "title": "KSamplerSelect — Sampler algorithm"
+    }
+  },
+  "123": {
+    "inputs": {
+      "scheduler": "simple",
+      "steps": [
+        "1702",
+        7
+      ],
+      "denoise": 1,
+      "model": [
+        "5",
+        0
+      ]
+    },
+    "class_type": "BasicScheduler",
+    "_meta": {
+      "title": "BasicScheduler — Per-shot scheduler steps"
+    }
+  },
+  "124": {
+    "inputs": {
+      "noise": [
+        "120",
+        0
+      ],
+      "guider": [
+        "121",
+        0
+      ],
+      "sampler": [
+        "122",
+        0
+      ],
+      "sigmas": [
+        "123",
+        0
+      ],
+      "latent_image": [
+        "1703",
+        3
+      ]
+    },
+    "class_type": "SamplerCustomAdvanced",
+    "_meta": {
+      "title": "SamplerCustomAdvanced — H3 sampler — SINGLE LOOP BODY"
+    }
+  },
+  "130": {
+    "inputs": {
+      "samples": [
+        "124",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE Decode — Decode current clip frames"
+    }
+  },
+  "131": {
+    "inputs": {
+      "samples": [
+        "124",
+        0
+      ],
+      "vae": [
+        "4",
+        0
+      ]
+    },
+    "class_type": "VAEDecodeAudio",
+    "_meta": {
+      "title": "VAE Decode Audio — Decode current clip audio"
+    }
+  },
+  "132": {
+    "inputs": {
+      "trim_frames": [
+        "1703",
+        1
+      ],
+      "fps": 24,
+      "match_tail": true,
+      "retain_overlap_frames": 0,
+      "images": [
+        "130",
+        0
+      ],
+      "audio": [
+        "131",
+        0
+      ],
+      "state": [
+        "1702",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3LoopTrim",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Trim — TRIM CONTEXT / AUTO-RESOLVE SCENE BLEND"
+    }
+  },
+  "1700": {
+    "inputs": {
+      "plan_json": "{\n  \"defaults\": {\n    \"duration_seconds\": 15,\n    \"steps\": 20\n  },\n  \"shots\": [\n    {\n      \"id\": \"parachute_to_building\",\n      \"prompt\": [\n        \"How the reference pictures align with the target video — Picture 1 (from Shot 1) aligns with the 0.00-second mark of the target video; Picture 2 (from Shot 1) aligns with the 15.08-second mark of the target video.\",\n        \"\",\n        \"integrated_multimodal_description: [Shot 1] Classic Doom 1993 first-person-shooter pixel art in a World War II Market Garden scenario. Begin from the exact first-person parachute view, hands, suspension lines, canopy, airborne soldiers, bridge, river, town, sky, HUD, palette, pixel scale, and composition established by <Picture 1>. Use one uninterrupted forward-moving gameplay shot with no camera cut.\",\n        \"\",\n        \"Timeline:\",\n        \"[0s-8s] The viewpoint descends rapidly while advancing toward the outskirts of the city. The older paratroopers descend at different depths with coherent pixel-art parallax; one soldier lands near the viewer as the bridge and river rise through frame.\",\n        \"[8s-10s] The player lands, the parachute collapses behind the viewpoint, and both hands pull an M1 Garand into the center of the screen. Preserve the HUD layout and first-person anatomy while the player turns toward the same dark building.\",\n        \"[10s-13.5s] The viewpoint runs to cover beside a friendly soldier and fires into the building. Muzzle flashes, recoil, blocky wall debris, and enemy reactions remain synchronized with the forward movement.\",\n        \"[13.5s-15.08s] The player pushes into the dark entrance and raises the rifle sight toward the enemy line inside. Progressively narrow every remaining difference in viewpoint, weapon position, doorway geometry, enemy spacing, HUD values, lighting, and pixel composition, landing exactly on <Picture 2> at the final frame.\",\n        \"\",\n        \"overall_soundscape: Flak bursts, distant gunfire, low World War II aircraft hum, rushing air, parachute fabric, landing impacts, running footsteps, M1 Garand handling, and sharp rifle reports follow the visible action continuously. Interior reverberation becomes audible only as the viewpoint enters the building.\",\n        \"\",\n        \"non_diegetic_music: A low-volume World War II-era brass-and-snare fanfare continues beneath the gameplay sounds without a new downbeat at the end.\"\n      ],\n      \"length\": 362,\n      \"seed\": \"2101\"\n    },\n    {\n      \"id\": \"respawn_to_parachute\",\n      \"prompt\": [\n        \"How the reference pictures align with the target video — <Picture 1> (from [Shot 1]) aligns with the 15.08-second mark of the target video.\",\n        \"\",\n        \"integrated_multimodal_description: [Shot 1] Continue the same uninterrupted Classic Doom 1993 first-person Market Garden gameplay directly from the incoming H3 Motion Context inside the dark building. Preserve the incoming rifle sight, enemy positions, doorway geometry, HUD, pixel scale, palette, lighting, movement direction, and active audio phase without resetting at the scene boundary. The complete shot forms a plausible retro-game death-and-respawn cycle that converges on the supplied final frame.\",\n        \"\",\n        \"Timeline:\",\n        \"[0s-5s] The rifle fires into the enemy line while the viewpoint strafes behind the doorway. Enemies return fire, the weapon recoils, and the HUD health falls as impacts throw small blocky fragments from the timber walls.\",\n        \"[5s-8s] A nearby explosion overwhelms the player. The first-person view jolts downward, the weapon drops partly out of frame, and the image darkens through a brief period-authentic game-over transition while the battlefield audio becomes muffled.\",\n        \"[8s-11.5s] The game immediately respawns into the same mission: darkness lifts into a bright pixel sky, rushing wind returns, parachute lines extend into view, and the HUD resets cleanly without duplicating hands, weapons, or interface elements.\",\n        \"[11.5s-15.08s] The airborne viewpoint steadies over the river, bridge, town, and descending soldiers. Progressively align the hands, suspension lines, canopy edge, soldier positions, horizon, bridge geometry, river, HUD, colors, and exact first-person composition with <Picture 1>, reaching it precisely at the final frame so the assembled video can loop back to its opening.\",\n        \"\",\n        \"overall_soundscape: Indoor rifle fire, enemy shots, ricochets, wall impacts, and a close explosion transition into a short muffled game-over tail. Wind, parachute fabric, distant flak, aircraft hum, and battlefield gunfire return gradually during the respawn and remain continuous into the loop point.\",\n        \"\",\n        \"non_diegetic_music: The same low-volume World War II-era fanfare briefly filters down during the death transition, then resumes its brass-and-snare texture without a hard restart at the final boundary.\"\n      ],\n      \"length\": 362,\n      \"seed\": \"2102\"\n    }\n  ]\n}",
+      "run_name": "fl2v_normal_market_garden_ab_loop",
+      "generation_fingerprint": "fl2v-market-garden-a-b-a-v1",
+      "width": 896,
+      "height": 672,
+      "context_length": 22,
+      "encode_mode": "video",
+      "anchor_mode": "head",
+      "crop": "disabled",
+      "audio_mode": "generated_audio",
+      "audio_context_length": 22,
+      "default_duration_seconds": 15,
+      "default_steps": 20,
+      "base_seed": 0,
+      "segment_crf": 20,
+      "video_blend_frames": 0,
+      "continuation_mode": "guide",
+      "chain_policy": [
+        "1952",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainPlan",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Plan — FL2V LOOP PLAN — NORMAL EDITOR"
+    }
+  },
+  "1701": {
+    "inputs": {
+      "start_clip": 1,
+      "scene_range": "",
+      "verify_resume_history": true,
+      "plan": [
+        "1951",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainLoopStart",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Start — LOOP START / RESUME"
+    }
+  },
+  "1702": {
+    "inputs": {
+      "align_audio_reference": false,
+      "state": [
+        "1701",
+        1
+      ]
+    },
+    "class_type": "MiniMaxH3ChainCurrent",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Current Shot — CURRENT FL2V SCENE — PROMPT / SEED / TIMING"
+    }
+  },
+  "1703": {
+    "inputs": {
+      "state": [
+        "1702",
+        0
+      ],
+      "conditioning": [
+        "110",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "latent": [
+        "110",
+        1
+      ]
+    },
+    "class_type": "MiniMaxH3ChainContext",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Context — AUTO CONTEXT — clip 1 bypass / continuation"
+    }
+  },
+  "1704": {
+    "inputs": {
+      "state": [
+        "1702",
+        0
+      ],
+      "images": [
+        "132",
+        0
+      ],
+      "sampled_latent": [
+        "124",
+        0
+      ],
+      "audio": [
+        "132",
+        1
+      ],
+      "images_with_overlap": [
+        "132",
+        2
+      ]
+    },
+    "class_type": "MiniMaxH3ChainSegmentSave",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Segment + Checkpoint — SAVE DELIVERED + BLEND-READY SEGMENTS"
+    }
+  },
+  "1705": {
+    "inputs": {
+      "between_scene_cleanup": "off",
+      "flow": [
+        "1701",
+        0
+      ],
+      "state": [
+        "1702",
+        0
+      ],
+      "images": [
+        "132",
+        0
+      ],
+      "sampled_latent": [
+        "124",
+        0
+      ],
+      "segment": [
+        "1944",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainLoopEnd",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop End — LOOP END — ADVANCE T2V SCENE"
+    }
+  },
+  "1706": {
+    "inputs": {
+      "audio_source": "plan",
+      "filename": "t2v_normal_%date:yyyy-MM-dd%",
+      "audio_bitrate": 256,
+      "copy_to_output": false,
+      "output_subfolder": "",
+      "blend_schedule": "plan",
+      "boundary_tone_match": "off",
+      "color_stabilization": "off",
+      "manifest": [
+        "1705",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainAssemble",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Assemble — FINAL ASSEMBLY — 5-FRAME VISUAL BLEND"
+    }
+  },
+  "1930": {
+    "inputs": {
+      "plan": [
+        "1700",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainScenePromptEditor",
+    "_meta": {
+      "title": "MiniMax H3 Scene Prompt Editor — SCENE PROMPT EDITOR — STANDARD AUTHORING"
+    }
+  },
+  "1941": {
+    "inputs": {
+      "attention": "comfy kitchen attention",
+      "model": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "ModelAttentionBackend",
+    "_meta": {
+      "title": "ModelAttentionBackend — COMFY KITCHEN ATTENTION"
+    }
+  },
+  "1944": {
+    "inputs": {
+      "enabled": true,
+      "play_notification_sound": false,
+      "auto_continue_timeout_minutes": 0,
+      "unload_models_while_waiting": false,
+      "assemble_partial_on_stop": true,
+      "partial_audio_source": "checkpointed",
+      "candidate_count": 1,
+      "review_each_candidate": false,
+      "state": [
+        "1702",
+        0
+      ],
+      "segment": [
+        "1704",
+        0
+      ],
+      "audio": [
+        "132",
+        1
+      ]
+    },
+    "class_type": "MiniMaxH3ChainReview",
+    "_meta": {
+      "title": "MiniMax H3 Contex Loop Review Gate — REVIEW GATE — APPROVE / EDIT+RETRY / REROLL / STOP"
+    }
+  },
+  "1945": {
+    "inputs": {
+      "image": "jigen_market_garden_doom_opening.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image — FRAME A — LOOP OPENING / SCENE 2 TARGET"
+    }
+  },
+  "1946": {
+    "inputs": {
+      "state": [
+        "1702",
+        0
+      ],
+      "image": [
+        "1945",
+        0
+      ],
+      "last_frame": [
+        "1948",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainFirstSceneImage",
+    "_meta": {
+      "title": "MiniMax H3 Frame Gate — FRAME GATE — FRAME A ONCE / SELECTED END TARGET"
+    }
+  },
+  "1947": {
+    "inputs": {
+      "image": "jigen_market_garden_doom_last.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image — FRAME B — SCENE 1 TARGET"
+    }
+  },
+  "1948": {
+    "inputs": {
+      "clip_index": [
+        "1702",
+        1
+      ],
+      "frame_1": [
+        "1947",
+        0
+      ],
+      "frame_2": [
+        "1945",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainFrameIndexSwitch",
+    "_meta": {
+      "title": "MiniMax H3 Frame Index Switch — LAST-FRAME INDEX — SCENE 1→B / SCENE 2→A"
+    }
+  },
+  "1951": {
+    "inputs": {
+      "start_clip": 1,
+      "scene_range": "",
+      "verify_resume_history": true,
+      "plan": [
+        "1930",
+        0
+      ]
+    },
+    "class_type": "MiniMaxH3ChainPreflight",
+    "_meta": {
+      "title": "MiniMax H3 Chain Preflight — 0.5 PREFLIGHT — BLOCKS BEFORE MODELS"
+    }
+  },
+  "1952": {
+    "inputs": {
+      "incoming_transition": "guide",
+      "final_audio": "generated",
+      "source_reference": "off",
+      "generated_continuity": "off",
+      "lock_source_audio": false
+    },
+    "class_type": "MiniMaxH3ChainPolicy",
+    "_meta": {
+      "title": "MiniMax H3 Chain Policy — 0.5 CHAIN POLICY"
+    }
+  }
+}

@@ -1,0 +1,282 @@
+{
+  "6": {
+    "inputs": {
+      "text": "Static camera, Wide Shot, Eye level, Standard lens, Center composition. The video opens on a deep and quiet stage within dense darkness, where radiant golden ginkgo leaves are densely clustered in the center. They form a transcendent light space combining a giant traditional mother-of-pearl structure with future technology. A single concentrated vertical light beam from the top center illuminates them, with subtle sparkling particles floating around. (0-30%) The central vertical light beam spreads across the entire top frame, cascading down as a waterfall of sacred, soft light beams. In response, the densely packed ginkgo leaves detach and begin to float gently. (30-80%) The floating ginkgo leaves move gorgeously, demonstrating a graceful and elegant expansion gradually widening horizontally from the center, beautifully and magnificently floating as they fill the space like meditative media art. The sparkling particles abundant flutter alongside the expanding leaves, maintaining a refined texture as they gently and slowly swirl. (80-100%) Across an infinitely expanding majestic scale, the ginkgo leaves spread out widely across the frame to form an upright forest, fully illuminated by the cascading, radiant waterfall of light. The entire scene evokes feelings of awe, sacredness, and serenity.",
+      "clip": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive Prompt)"
+    }
+  },
+  "7": {
+    "inputs": {
+      "text": "",
+      "clip": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative Prompt)"
+    }
+  },
+  "8": {
+    "inputs": {
+      "samples": [
+        "58",
+        0
+      ],
+      "vae": [
+        "39",
+        0
+      ]
+    },
+    "class_type": "VAEDecode",
+    "_meta": {
+      "title": "VAE 디코드"
+    }
+  },
+  "38": {
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan",
+      "device": "default"
+    },
+    "class_type": "CLIPLoader",
+    "_meta": {
+      "title": "CLIP 로드"
+    }
+  },
+  "39": {
+    "inputs": {
+      "vae_name": "wan_2.1_vae.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "VAE 로드"
+    }
+  },
+  "54": {
+    "inputs": {
+      "shift": 5,
+      "model": [
+        "91",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingSD3",
+    "_meta": {
+      "title": "모델 샘플링 (SD3)"
+    }
+  },
+  "55": {
+    "inputs": {
+      "shift": 5,
+      "model": [
+        "92",
+        0
+      ]
+    },
+    "class_type": "ModelSamplingSD3",
+    "_meta": {
+      "title": "모델 샘플링 (SD3)"
+    }
+  },
+  "57": {
+    "inputs": {
+      "add_noise": "enable",
+      "noise_seed": 610773037305500,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 0,
+      "end_at_step": 2,
+      "return_with_leftover_noise": "enable",
+      "model": [
+        "54",
+        0
+      ],
+      "positive": [
+        "67",
+        0
+      ],
+      "negative": [
+        "67",
+        1
+      ],
+      "latent_image": [
+        "67",
+        2
+      ]
+    },
+    "class_type": "KSamplerAdvanced",
+    "_meta": {
+      "title": "고급 KSampler"
+    }
+  },
+  "58": {
+    "inputs": {
+      "add_noise": "disable",
+      "noise_seed": 0,
+      "steps": 4,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "start_at_step": 2,
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable",
+      "model": [
+        "55",
+        0
+      ],
+      "positive": [
+        "67",
+        0
+      ],
+      "negative": [
+        "67",
+        1
+      ],
+      "latent_image": [
+        "57",
+        0
+      ]
+    },
+    "class_type": "KSamplerAdvanced",
+    "_meta": {
+      "title": "고급 KSampler"
+    }
+  },
+  "60": {
+    "inputs": {
+      "fps": 16,
+      "bit_depth": 8,
+      "images": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "CreateVideo",
+    "_meta": {
+      "title": "비디오 생성"
+    }
+  },
+  "61": {
+    "inputs": {
+      "filename_prefix": "video/ComfyUI",
+      "format": "auto",
+      "codec": "auto",
+      "video-preview": "",
+      "video": [
+        "60",
+        0
+      ]
+    },
+    "class_type": "SaveVideo",
+    "_meta": {
+      "title": "비디오 저장"
+    }
+  },
+  "62": {
+    "inputs": {
+      "image": "Gemini_Generated_Image_t28c0mt28c0mt28c.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "이미지 로드"
+    }
+  },
+  "67": {
+    "inputs": {
+      "width": 848,
+      "height": 480,
+      "length": 81,
+      "batch_size": 1,
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "vae": [
+        "39",
+        0
+      ],
+      "start_image": [
+        "68",
+        0
+      ],
+      "end_image": [
+        "62",
+        0
+      ]
+    },
+    "class_type": "WanFirstLastFrameToVideo",
+    "_meta": {
+      "title": "WAN 비디오 생성 (시작-끝 프레임)"
+    }
+  },
+  "68": {
+    "inputs": {
+      "image": "ChatGPT Image 2026년 8월 22일 오후 09_37_33.png"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "이미지 로드"
+    }
+  },
+  "91": {
+    "inputs": {
+      "lora_name": "Wan_2_2_I2V_A14B_HIGH_lightx2v_4step_lora_260412_rank_256_fp16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "99",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "LoRA 로드 (모델 전용)"
+    }
+  },
+  "92": {
+    "inputs": {
+      "lora_name": "Wan_2_2_I2V_A14B_LOW_lightx2v_4step_lora_260412_rank_256_fp16.safetensors",
+      "strength_model": 1,
+      "model": [
+        "100",
+        0
+      ]
+    },
+    "class_type": "LoraLoaderModelOnly",
+    "_meta": {
+      "title": "LoRA 로드 (모델 전용)"
+    }
+  },
+  "99": {
+    "inputs": {
+      "unet_name": "Wan2.2-I2V-A14B-HighNoise-Q5_1.gguf"
+    },
+    "class_type": "UnetLoaderGGUF",
+    "_meta": {
+      "title": "Unet Loader (GGUF)"
+    }
+  },
+  "100": {
+    "inputs": {
+      "unet_name": "Wan2.2-I2V-A14B-LowNoise-Q5_1.gguf"
+    },
+    "class_type": "UnetLoaderGGUF",
+    "_meta": {
+      "title": "Unet Loader (GGUF)"
+    }
+  }
+}

@@ -1,0 +1,37 @@
+name: Build FrameFlow Studio
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+jobs:
+  desktop:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: frameflow-windows
+          - os: macos-latest
+            artifact: frameflow-macos
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install frontend dependencies
+        run: npm ci
+      - name: Build desktop bundles
+        run: npm run tauri build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            src-tauri/target/release/bundle/**
+            src-tauri/target/release/frameflow-studio.exe
+            src-tauri/target/release/frameflow-studio
+          if-no-files-found: error

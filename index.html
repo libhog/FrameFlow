@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f8f4" />
+    <title>FrameFlow Studio</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      window.addEventListener('error', event => {
+        const app = document.querySelector('#app');
+        if (!app || app.childElementCount) return;
+        app.innerHTML = `<main style="min-height:100vh;display:grid;place-items:center;padding:32px;background:#f3f7f2;font-family:system-ui;color:#294a41"><section style="max-width:620px;padding:28px;border:1px solid #d8e2da;border-radius:18px;background:white"><h1 style="margin-top:0">FrameFlow를 시작하지 못했습니다</h1><p>앱을 다시 실행해 주세요. 계속 발생하면 아래 오류를 전달해 주세요.</p><code style="display:block;padding:12px;border-radius:9px;background:#edf2ee;white-space:pre-wrap">${String(event.error?.message || event.message || 'Unknown startup error')}</code></section></main>`;
+      });
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

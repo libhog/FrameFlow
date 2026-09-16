@@ -1,0 +1,42 @@
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/resources/__pycache__/
+**/__pycache__/
+*.log
+.DS_Store
+
+# Local builds and packaged applications
+release/
+GlitchCut-Portable/
+
+# Local experiments, backups, and generated verification artifacts
+work/
+verification/
+.codex-remote-attachments/
+.tmp-*/
+.wv-*/
+.edge-test-*/
+*.vis
+
+# Generated/test media and archives
+*.mp4
+*.mov
+*.mkv
+*.avi
+*.webm
+*.7z
+*.7z.*
+*.zip
+*.ffconcat
+Hongcheon-*-api.json
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Runtime models are distributed separately, not through the source repository
+public/supertonic/onnx/*.onnx
